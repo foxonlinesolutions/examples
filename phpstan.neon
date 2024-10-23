@@ -1,5 +1,6 @@
 includes:
-    - ./vendor/larastan/larastan/extension.neon
+    - vendor/larastan/larastan/extension.neon
+
 parameters:
     paths:
         - app/
@@ -7,7 +8,9 @@ parameters:
     level: 5
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'
+#
 #    excludePaths:
 #        - ./*/*/FileToBeExcluded.php
+#
 #    checkMissingIterableValueType: false
-    tmpDir: .phpstan
+  tmpDir: .phpstan

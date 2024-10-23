@@ -93,7 +93,7 @@ jobs:
         run: pint --test
 
       - name: Run PHPStan (Static Analysis)
-        run: phpstan --error-format=github
+        run: phpstan analyse --error-format=github
 
 #      - name: Commit linted files
 #        uses: stefanzweifel/git-auto-commit-action@v5
