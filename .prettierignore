@@ -1,0 +1,22 @@
+# Ignore everything recursively
+*
+
+# Include file types
+!*.html
+!*.js
+!*.ts
+!*.vue
+
+# Include subdirectories
+!*/
+
+# Ignore the following
+.*
+_*
+build
+cache
+node_modules
+public
+routes
+storage
+vendor
