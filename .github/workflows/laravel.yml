@@ -1,116 +1,60 @@
-name: Laravel
+name: CI/CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-#  laravel-tests:
-#    name: Laravel Tests
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#    - name: Checkout code
-#      uses: actions/checkout@v4
-#
-#    - name: Setup PHP
-#      uses: shivammathur/setup-php@v2
-#      with:
-#        php-version: '8.3'
-#        extensions: json, dom, curl, libxml, mbstring
-#        coverage: xdebug
-#
-#    - name: Setup Node
-#      uses: actions/setup-node@v4
-#      with:
-#        node-version: '20'
-#        cache: 'npm'
-#
-#    - name: Cache Vendor
-#      id: cache-vendor
-#      uses: actions/cache@v3
-#      with:
-#        path: vendor
-#        key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-#
-#    - name: Install Composer Dependencies
-#      if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
-#      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-#
-#    - name: Install NPM Dependencies
-#      run: npm ci
-#
-#    - name: Build Assets
-#      run: npm run build
-#
-#    - name: Copy .env
-#      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-#
-#    - name: Generate key
-#      run: php artisan key:generate
-#
-#    - name: Directory permissions
-#      run: chmod -R 777 storage bootstrap/cache
-#
-#    - name: Create database
-#      run: |
-#        mkdir -p database
-#        touch database/database.sqlite
-#
-#    - name: Execute tests
-#      env:
-#        DB_CONNECTION: sqlite
-#        DB_DATABASE: database/database.sqlite
-#      run: php artisan test --coverage
-
-  lint:
-    name: Linting
+  laravel-tests:
+    name: Laravel Tests
     runs-on: ubuntu-latest
-#    needs: laravel-tests
-
-#    strategy:
-#      fail-fast: true
-#      matrix:
-#        php: [8.3]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: json, dom, curl, libxml, mbstring
-          coverage: none
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: json, dom, curl, libxml, mbstring
+        coverage: xdebug
 
-      - name: Install Pint and PHPStan
-        run: composer require laravel/pint larastan/larastan:^2.0
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
 
-      - name: Run Pint (Formatting)
-        run: vendor/bin/pint --test
+    - name: Install Composer dependencies
+      uses: ramsey/composer-install@v3
+      with:
+        composer-options: '--no-scripts --prefer-dist'
 
-      - name: Restore PHPStan cache
-        uses: actions/cache/restore@v3
-        with:
-          path: .phpstan
-          key: "phpstan-result-cache-${{ github.run_id }}"
-          restore-keys: |
-            phpstan-result-cache-
+    - name: Install NPM Dependencies
+      run: npm ci
 
-      - name: Run PHPStan (Static Analysis)
-        run: vendor/bin/phpstan analyse --error-format=github
+    - name: Build Assets
+      run: npm run build
 
-      - name: Save PHPStan cache
-        uses: actions/cache/save@v3
-        if: always()
-        with:
-          path: .phpstan
-          key: "phpstan-result-cache-${{ github.run_id }}"
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-#      - name: Commit linted files
-#        uses: stefanzweifel/git-auto-commit-action@v5
-#        with:
-#          commit_message: "Fixes coding style"
+    - name: Generate key
+      run: php artisan key:generate
+
+    - name: Directory permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Create database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Execute tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test --coverage

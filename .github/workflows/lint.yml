@@ -1,0 +1,65 @@
+name: Lint
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  php-formatting:
+    name: PHP formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-scripts --prefer-dist'
+
+      - name: Run Pint
+        run: vendor/bin/pint --test
+
+  php-static-analysis:
+    name: PHP static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-scripts --prefer-dist'
+
+      - name: Restore PHPStan cache
+        uses: actions/cache/restore@v3
+        with:
+          path: .phpstan
+          key: "phpstan-result-cache-${{ github.run_id }}"
+          restore-keys: |
+            phpstan-result-cache-
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=2G --error-format=github
+
+      - name: Save PHPStan cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: .phpstan
+          key: "phpstan-result-cache-${{ github.run_id }}"

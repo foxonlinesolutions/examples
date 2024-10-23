@@ -1,0 +1,58 @@
+name: Audit
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  composer-audit:
+    name: Composer audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-scripts --prefer-dist'
+
+      - name: Run Composer audit
+        uses: alamirault/composer-audit-action@v1
+
+  npm-audit:
+    name: NPM audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Run NPM audit
+        uses: luisfontes19/npm-audit-action@v0.1.0
+        with:
+          project-path: "."
+          json: false
+          only: prod
+          level: high
+          fix: false
+          package-lock-only: true
+          force: false
