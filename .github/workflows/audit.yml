@@ -54,5 +54,4 @@ jobs:
           only: prod
           level: high
           fix: false
-          package-lock-only: true
           force: false
