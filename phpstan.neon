@@ -13,4 +13,4 @@ parameters:
 #        - ./*/*/FileToBeExcluded.php
 #
 #    checkMissingIterableValueType: false
-  tmpDir: .phpstan
+    tmpDir: .phpstan
