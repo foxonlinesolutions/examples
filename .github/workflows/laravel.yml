@@ -86,14 +86,29 @@ jobs:
           extensions: json, dom, curl, libxml, mbstring
           coverage: none
 
-      - name: Install Pint
-        run: composer global require laravel/pint larastan/larastan:^2.0
+      - name: Install Pint and PHPStan
+        run: composer require laravel/pint larastan/larastan:^2.0
 
       - name: Run Pint (Formatting)
         run: pint --test
 
+      - name: Restore PHPStan cache
+        uses: actions/cache/restore@v3
+        with:
+          path: .phpstan
+          key: "phpstan-result-cache-${{ github.run_id }}"
+          restore-keys: |
+            phpstan-result-cache-
+
       - name: Run PHPStan (Static Analysis)
-        run: phpstan analyse --error-format=github
+        run: vendor/bin/phpstan analyse --error-format=github
+
+      - name: Save PHPStan cache
+        uses: actions/cache/save@v3
+        if: always()
+        with:
+          path: .phpstan
+          key: "phpstan-result-cache-${{ github.run_id }}"
 
 #      - name: Commit linted files
 #        uses: stefanzweifel/git-auto-commit-action@v5
