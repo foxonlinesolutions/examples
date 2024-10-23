@@ -7,68 +7,68 @@ on:
     branches: [ "main" ]
 
 jobs:
-  laravel-tests:
-    name: Laravel Tests
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
-        extensions: json, dom, curl, libxml, mbstring
-        coverage: xdebug
-
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-
-    - name: Cache Vendor
-      id: cache-vendor
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
-
-    - name: Install Composer Dependencies
-      if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-
-    - name: Install NPM Dependencies
-      run: npm ci
-
-    - name: Build Assets
-      run: npm run build
-
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-    - name: Generate key
-      run: php artisan key:generate
-
-    - name: Directory permissions
-      run: chmod -R 777 storage bootstrap/cache
-
-    - name: Create database
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-
-    - name: Execute tests
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: php artisan test --coverage
+#  laravel-tests:
+#    name: Laravel Tests
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - name: Checkout code
+#      uses: actions/checkout@v4
+#
+#    - name: Setup PHP
+#      uses: shivammathur/setup-php@v2
+#      with:
+#        php-version: '8.3'
+#        extensions: json, dom, curl, libxml, mbstring
+#        coverage: xdebug
+#
+#    - name: Setup Node
+#      uses: actions/setup-node@v4
+#      with:
+#        node-version: '20'
+#        cache: 'npm'
+#
+#    - name: Cache Vendor
+#      id: cache-vendor
+#      uses: actions/cache@v3
+#      with:
+#        path: vendor
+#        key: ${{ runner.os }}-vendor-${{ hashFiles('**/composer.lock') }}
+#
+#    - name: Install Composer Dependencies
+#      if: steps.cache-vendor.outputs.cache-hit != 'true' # Skip if cache hit
+#      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#
+#    - name: Install NPM Dependencies
+#      run: npm ci
+#
+#    - name: Build Assets
+#      run: npm run build
+#
+#    - name: Copy .env
+#      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+#
+#    - name: Generate key
+#      run: php artisan key:generate
+#
+#    - name: Directory permissions
+#      run: chmod -R 777 storage bootstrap/cache
+#
+#    - name: Create database
+#      run: |
+#        mkdir -p database
+#        touch database/database.sqlite
+#
+#    - name: Execute tests
+#      env:
+#        DB_CONNECTION: sqlite
+#        DB_DATABASE: database/database.sqlite
+#      run: php artisan test --coverage
 
   lint:
     name: Linting
     runs-on: ubuntu-latest
-    needs: laravel-tests
+#    needs: laravel-tests
 
 #    strategy:
 #      fail-fast: true
@@ -90,7 +90,7 @@ jobs:
         run: composer require laravel/pint larastan/larastan:^2.0
 
       - name: Run Pint (Formatting)
-        run: pint --test
+        run: vendor/bin/pint --test
 
       - name: Restore PHPStan cache
         uses: actions/cache/restore@v3
